@@ -1,0 +1,23 @@
+{
+	"sender": {
+		"peerId": null,
+		"whoToldYou": "Star Name",
+		"whoYouTold": [],
+		"lastSeen": "timestamp",
+		"isDead": false,
+		"seenPersonally": false,
+		"messages": {
+			"reciever": [
+				{
+					"timestamp": 1,
+					"sent": ""
+				}
+			],
+			"Star Name": [],
+			"Star Name": [],
+			"Star Name": [],
+			"Star Name": [],
+			"Star Name": []
+		}
+	}
+}
