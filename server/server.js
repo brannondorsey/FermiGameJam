@@ -11,7 +11,7 @@ let parsed_hygdata = Baby.parseFiles(
     "data/hygdata_v3.csv",
     {
         header: true,
-        dynoamicTyping: true,
+        dynamicTyping: true,
         complete: function(results) {
             console.log("parsed hygdata")
         }
@@ -32,18 +32,31 @@ peerServer.on('connection', id => {
     console.log(`a peer client connected with id: ${id}`)
 });
 
-io.on('connection', socket =>{
-    console.log('a socket.io client connected')
-    socket.on('geolocation', geo => {
-    	if (geo) {
+io.on('connection', socket =>
+    {
+        console.log('a socket.io client connected')
+        socket.on('geolocation', geolocation =>
+            {
+                console.log(geolocation)
+                let id = geolocation.id
 
-    	} else {
-    		// geolocation was not supported by the
-    		// browser, or the user chose not share it
+                if (geolocation.geo) {
+                    ids[id] = assignStar(geolocation.geo, ids)
+                } else {
+                    ids[id] = assignStar(
+                        {
+                            lat: Math.random(),
+                            lon: Math.random()
+                        },
+                        ids
+                    )
+                }
 
-    	}
-    })
-});
+                console.log(ids[id])
+            }
+        )
+    }
+);
 
 io.listen(3000)
 
@@ -95,5 +108,5 @@ function assignStar (geo, ids) {
                 }
         )
 
-    return sorted_star_list[sorted_star_list.length - 1]
+    return sorted_star_list[sorted_star_list.length - 1].id
 }
