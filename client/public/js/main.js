@@ -7,6 +7,16 @@ p2p.on('ice_connected', (id) => {
 	console.log(`[ice_connected]: ${id}`)
 	let starName = Math.random().toString()
 	civLog = new CivLogManager(id, starName)
+
+	getGeolocation()
+	.then((pos) => {
+		let coords = {
+			lat: pos.coords.latitude,
+			lon: pos.coords.longitude
+		}
+		socket.emit('geolocation', { id, geo: coords })
+	})
+	.catch(onGeoFailed)
 })
 
 p2p.on('civ_connected', (id) => {
@@ -53,17 +63,6 @@ p2p.on('igm_ping', (id, igm) => {
 p2p.on('igm_ack', (id, igm) => {
 	console.log(`[igm_ack]`)
 })
-
-getGeolocation()
-	.then((pos) => {
-		let coords = {
-			lat: pos.coords.latitude,
-			lon: pos.coords.longitude
-		}
-		socket.emit('geolocation', coords)
-	})
-	.catch(onGeoFailed)
-
 
 function test(id, ping) {
 	p2p.connect(id)
