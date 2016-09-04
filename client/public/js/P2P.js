@@ -10,7 +10,12 @@ class P2P extends EventEmitter {
 			'civ_connected',
 			'civ_disconnected',
 			'civ_log_received',
-			'civ_message'
+			'igm',
+			'igm_contact',
+			'igm_chat',
+			'igm_ping',
+			'igm_ack',
+			'igm_sent'
 		]
 
 		this._peer = new Peer({
@@ -42,19 +47,17 @@ class P2P extends EventEmitter {
 		})
 	}
 
-	sendMessage(id, text) {
-		this._send(id, { type: 'message', data: text })
+	sendLog(id, log) {
+		let conn = this._conns.get(id)
+		conn.send(log)
 	}
 
-	sendCivLog(id, civLog) {
-		this._send(id, { type: 'civLog', data: civLog })
-	}
-
-	_send(id, messObj) {
+	sendIGM(id, igm) {
 		if (!this._conns.has(id)) 
 			throw Error(`${id} does not have a valid connection`)
 		let conn = this._conns.get(id)
-		conn.send(messObj)
+		conn.send(igm)
+		this.emitEvent('igm_sent', [id, igm])
 	}
 
 	_registerPeerEvents(conn, resolve, reject) {
@@ -65,7 +68,12 @@ class P2P extends EventEmitter {
 			this._conns.set(id, conn)
 			
 			conn.on('data', data => {
-				this._handlePeerMessage(id, data)
+				// if array, this is a civLog
+				if (data instanceof Array) {
+					this.emitEvent('civ_log_received', [id, data])
+				} else { // otherwise it is an igm
+					this._handlePeerMessage(id, data)
+				}
 			})
 
 			// not supported by FF
@@ -75,7 +83,7 @@ class P2P extends EventEmitter {
 			})
 
 			this.emitEvent('civ_connected', [id])
-			if (resolve) resolve()
+			if (resolve) resolve(id)
 		})
 
 		conn.on('error', (err) => { 
@@ -83,15 +91,24 @@ class P2P extends EventEmitter {
 		})
 	}
 
-	_handlePeerMessage(id, mess) {
+	_handlePeerMessage(id, igm) {
 		
-		switch (mess.type) {
-			case 'civLog':
-				this.emitEvent('civ_log_received', [id, mess.data])
+		this.emitEvent('igm', [id, igm])
+
+		switch (igm.type) {
+			case 'contact':
+				this.emitEvent('igm_contact', [id, igm])
 				break
-			case 'message':
-				this.emitEvent('civ_message', [id, mess.data])
+			case 'chat':
+				this.emitEvent('igm_chat', [id, igm])
 				break
+			case 'ping':
+				this.emitEvent('igm_ping', [id, igm])
+				break 
+			case 'ack':
+				this.emitEvent('igm_ack', [id, igm])
+				break 
+
 		} 
 			
 	}

@@ -4,24 +4,54 @@ let civLog = null
 let p2p = new P2P()
 
 p2p.on('ice_connected', (id) => {
-	console.log(`ice connected: ${id}`)
+	console.log(`[ice_connected]: ${id}`)
 	let starName = Math.random().toString()
 	civLog = new CivLogManager(id, starName)
 })
 
 p2p.on('civ_connected', (id) => {
-	p2p.sendCivLog(id, demapify(civLog.log))
+	console.log(`[civ_connected]: ${id}`)
+	p2p.sendIGM(id, civLog.createIGM(id, 'contact', null))
+	p2p.sendLog(id, civLog.log)
+})
+
+p2p.on('civ_log_received', (id, log) => {
+	console.log(`[civ_log_received]: ${log}`)
+	civLog.merge(id, log)
 })
 
 p2p.on('civ_disconnected', (id) => console.log(`civilization ${id} connected`))
 
-p2p.on('civ_message', (id, mess) => {
-	console.log(`civilization message received:\n\t${mess}`)
+// IGM SENT AND RECEIVED
+p2p.on('igm', (id, igm) => {
+	console.log('[igm]: Adding igm to civ log')
+	// debugger
+	civLog.addIGM(igm)
 })
 
-p2p.on('civ_log_received', (id, log) => {
-	console.log(`civilization log received:`)
-	civLog.merge(id, log)
+p2p.on('igm_sent', (id, igm) => {
+	console.log('[igm_sent]: Adding igm to civ log')
+	// debugger
+	civLog.addIGM(igm)
+})
+
+// SPECIFIC IGM RECEIVED EVENTS
+p2p.on('igm_chat', (id, igm) => {
+	console.log(`[igm_chat]:\n\t${igm}`)
+})
+
+p2p.on('igm_contact', (id, igm) => {
+	console.log(`[igm_contact]: `)
+	console.log(igm)
+})
+
+p2p.on('igm_ping', (id, igm) => {
+	console.log(`[igm_ping]`)
+	p2p.sendIGM(id, civLog.createIGM(id, 'ack', null))
+})
+
+p2p.on('igm_ack', (id, igm) => {
+	console.log(`[igm_ack]`)
 })
 
 getGeolocation()
@@ -35,9 +65,16 @@ getGeolocation()
 	.catch(onGeoFailed)
 
 
-function test(id) {
+function test(id, ping) {
 	p2p.connect(id)
-		.then(() => p2p.sendMessage(id, 'Hello, World!'))
+		.then((id) => {
+			p2p.sendIGM(id, civLog.createIGM(id, 'chat', 'Hello, World!'))
+			if (ping) {
+				setInterval(() => {
+					p2p.sendIGM(id, civLog.createIGM(id, 'ping', null))
+				}, 1000)
+			}
+		})
 		.catch(err => { throw err })
 }
 
