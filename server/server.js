@@ -20,8 +20,8 @@ let parsed_hygdata = Baby.parseFiles(
 
 // filters star catalogue
 let star_list = parsed_hygdata.data
-    .filter(star => star.proper !== 'Sol')
-    .filter(star => star.dist < 10000000)
+    .filter(star => ((star.proper !== 'Sol') && (star.dist < 100000)))
+
 
 peerServer.on('connection', id => {
 
@@ -45,8 +45,8 @@ io.on('connection', socket =>
                 } else {
                     ids[id] = assignStar(
                         {
-                            lat: Math.random(),
-                            lon: Math.random()
+                            lat: (Math.random() * 180) - 90,
+                            lon: (Math.random() * 360) - 180
                         },
                         ids
                     )
@@ -104,7 +104,7 @@ function assignStar (geo, ids) {
                         star2.rarad
                     )
 
-                    return star1_ca < star2_ca
+                    return (star1_ca < star2_ca)?-1:1
                 }
         )
 
