@@ -1,27 +1,28 @@
-let cLogMan = new CivLogManager()
+let socket = io('localhost:3000')
+
+let civLog = null
 let p2p = new P2P()
-p2p.on('ice_connected', () => console.log('connected to ICE server'))
-p2p.on('civ_connected', () => console.log('civilization connected'))
+
+p2p.on('ice_connected', (id) => {
+	console.log(`ice connected: ${id}`)
+	let starName = Math.random().toString()
+	civLog = new CivLogManager(id, starName)
+})
+
+p2p.on('civ_connected', (id) => {
+	p2p.sendCivLog(id, demapify(civLog.log))
+})
+
 p2p.on('civ_disconnected', (id) => console.log(`civilization ${id} connected`))
-p2p.on('civ_message', (mess) => {
+
+p2p.on('civ_message', (id, mess) => {
 	console.log(`civilization message received:\n\t${mess}`)
 })
-p2p.on('civ_log_received', (civLog) => {
+
+p2p.on('civ_log_received', (id, log) => {
 	console.log(`civilization log received:`)
-	console.log(civLog)
+	civLog.merge(id, log)
 })
-
-function test(id) {
-	p2p.discover(id)
-		.then(() => {
-			console.log('discovered!')
-			p2p.sendCivLog(id, demapify(cLogMan.log))
-		})
-		.then(() => p2p.sendMessage(id, 'Hello, World!'))
-		.catch(err => { throw err })
-}
-
-let socket = io('localhost:3000')
 
 getGeolocation()
 	.then((pos) => {
@@ -33,6 +34,12 @@ getGeolocation()
 	})
 	.catch(onGeoFailed)
 
+
+function test(id) {
+	p2p.connect(id)
+		.then(() => p2p.sendMessage(id, 'Hello, World!'))
+		.catch(err => { throw err })
+}
 
 function getGeolocation() {
 	return new Promise(function(res, rej){

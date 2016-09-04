@@ -1,6 +1,7 @@
 {
 	"sender": {
 		"peerId": null,
+		"name": null,
 		"whoToldYou": "Star Name",
 		"whoYouTold": [],
 		"lastSeen": "timestamp",
