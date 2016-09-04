@@ -16,7 +16,7 @@ p2p.on('ice_connected', (id) => {
 		}
 		socket.emit('geolocation', { id, geo: coords })
 	})
-	.catch(onGeoFailed)
+	.catch((err) => onGeoFailed(id, err))
 })
 
 p2p.on('civ_connected', (id) => {
@@ -95,6 +95,6 @@ function getGeolocation() {
 	})
 }
 
-function onGeoFailed(err) {
-	socket.emit('geolocation', null)
+function onGeoFailed(id, err) {
+	socket.emit('geolocation', { id, geo: null })
 }
