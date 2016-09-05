@@ -3,6 +3,7 @@ let Baby = require('babyparse')
 
 let io = require('socket.io')();
 
+// map between peerIds and starIds
 let ids = new Map()
 let peerServer = PeerServer({port: 9000, path: '/fermi'})
 
@@ -41,18 +42,40 @@ io.on('connection', socket =>
                 let id = geolocation.id
 
                 if (geolocation.geo) {
-                    ids[id] = assignStar(geolocation.geo, ids)
+                    ids.set(id, assignStar(geolocation.geo, ids))
                 } else {
-                    ids[id] = assignStar(
-                        {
-                            lat: (Math.random() * 180) - 90,
-                            lon: (Math.random() * 360) - 180
-                        },
-                        ids
+                    ids.set(
+                        id,
+                        assignStar(
+                            {
+                                lat: (Math.random() * 180) - 90,
+                                lon: (Math.random() * 360) - 180
+                            },
+                            ids
+                        )
                     )
                 }
-                socket.emit('star_assignment', ids[id])
-                console.log(`assigned star ${ids[id]} to id ${id}`)
+                // star assignment
+                socket.emit('star_assignment', ids.get(id))
+                console.log(`assigned star ${ids.get(id)} to id ${id}`)
+
+                // initial introduction
+                let potential_friends = Array.from(ids.keys()).filter(key => key !== id)
+                if (potential_friends.length > 0) {
+                    let friend_peer_id = potential_friends[
+                        Math.floor(Math.random() * potential_friends.length)
+                    ]
+                    let friend_star_id = ids.get(friend_peer_id)
+                    socket.emit(
+                        'star_introduction',
+                        {
+                            peerId: friend_peer_id,
+                            starId: friend_star_id
+                        }
+                    )
+                    console.log(`introduced ${id} (${ids.get(id)}) to ${friend_peer_id} (${friend_star_id})`)
+                }
+
             }
         )
     }
