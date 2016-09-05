@@ -8,6 +8,8 @@ socket.on('star_introduction', ({peerId, starId}) => {
 	console.log(`introduced to ${peerId} (${starId})`)
 	civLog.updateIdMaps(peerId, starId)
 	p2p.connect(peerId)
+                // we might not want to have this happen automatically
+                // rather, let the use ping manually?
 		.then((id) => {
                         p2p.sendIGM(id, civLog.createIGM(id, 'ping', null))
 		})
@@ -85,19 +87,6 @@ p2p.on('igm_ack', (id, igm) => {
         p2p.sendLog(id, civLog.log)
 	console.log(`[igm_ack]`)
 })
-
-function test(id, ping) {
-	p2p.connect(id)
-		.then((id) => {
-			p2p.sendIGM(id, civLog.createIGM(id, 'chat', 'Hello, World!'))
-			if (ping) {
-				setInterval(() => {
-					p2p.sendIGM(id, civLog.createIGM(id, 'ping', null))
-				}, 1000)
-			}
-		})
-		.catch(err => { throw err })
-}
 
 function getGeolocation() {
 	return new Promise(function(res, rej){
