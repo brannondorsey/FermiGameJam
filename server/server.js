@@ -51,8 +51,8 @@ io.on('connection', socket =>
                         ids
                     )
                 }
-
-                console.log(ids[id])
+                socket.emit('star_assignment', ids[id])
+                console.log(`assigned star ${ids[id]} to id ${id}`)
             }
         )
     }
