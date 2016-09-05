@@ -1,7 +1,7 @@
 let galaxy = new Galaxy()
 galaxy.load()
     .then(() => console.log('loaded the galaxy'))
-    .catch(err => {throw err })
+    .catch(err => { throw err })
 
 // let hyg = null
 
