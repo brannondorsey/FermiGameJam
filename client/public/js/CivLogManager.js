@@ -47,19 +47,7 @@ class CivLogManager {
 		log.forEach(igm => this.addIGM(igm, true))
 	}
 
-	getMessages(star) {
-
-	}
-
-	_updateEntry(senderId, name, their) {
-		
-	}
-
-	_addEntry(senderId, name, entry) {
-		
-	}
-
-	_mergeMessage(name, their) {
+	getChats() {
 
 	}
 
@@ -75,6 +63,18 @@ class CivLogManager {
 		igm.type = type
 		igm.data = data 
 		return igm
+	}
+
+	_updateEntry(senderId, name, their) {
+		
+	}
+
+	_addEntry(senderId, name, entry) {
+		
+	}
+
+	_mergeMessage(name, their) {
+
 	}
 
 	_peerId2StarId(peerId) {

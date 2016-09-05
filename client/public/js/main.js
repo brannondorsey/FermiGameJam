@@ -33,8 +33,8 @@ p2p.on('civ_log_received', (id, log) => {
 p2p.on('civ_disconnected', (id) => console.log(`civilization ${id} connected`))
 
 // IGM SENT AND RECEIVED
-p2p.on('igm', (id, igm) => {
-	console.log('[igm]: Adding igm to civ log')
+p2p.on('igm_received', (id, igm) => {
+	console.log('[igm_received]: Adding igm to civ log')
 	// debugger
 	civLog.addIGM(igm)
 })
