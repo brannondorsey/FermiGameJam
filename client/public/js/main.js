@@ -1,4 +1,18 @@
 let socket = io('localhost:3000')
+socket.on('star_assignment', starId => {
+	console.log('[star_assignment]')
+	civLog.begin(starId)
+})
+
+socket.on('star_introduction', ({peerId, starId}) => {
+	console.log('[star_introduction]')
+	civLog.updateIdMaps(peerId, starId)
+	p2p.connect(id)
+		.then((id) => {
+			p2p.sendIGM(id, civLog.createIGM(id, 'chat', 'Hello, World!'))
+		})
+		.catch(err => { throw err })
+})
 
 let civLog = null
 let p2p = new P2P()

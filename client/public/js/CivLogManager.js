@@ -1,9 +1,11 @@
-
 class CivLogManager {
 
 	constructor(peerId, starName) {
 		
 		this.log = []
+		this.peerId2StarId = new Map()
+		this.starId2PeerId = new Map()
+
 		this._igm = {
 			to: {
 				peerId: null,
@@ -28,7 +30,7 @@ class CivLogManager {
 
 		this.self = {
 			peerId,
-			starId: this._peerId2StarId(peerId)
+			starId: null
 		}
 		
 	}
@@ -43,8 +45,43 @@ class CivLogManager {
 		return true
 	}
 
+	begin(starId) {
+		this.self.starId = starId
+		this.peerId2StarId.set(this.self.peerId, this.self.starId)
+		this.starId2PeerId.set(this.self.starId, this.self.peerId)
+	}
+
 	merge(senderId, log) {
-		log.forEach(igm => this.addIGM(igm, true))
+		log.forEach(igm => {
+			this.addIGM(igm, true)
+			this._updateIdMapsFromIGM(igm)
+		})
+	}
+
+	updateIdMaps(id, starId) {
+		this.peerId2StarId.set(id, starId)
+		this.starId2PeerId.set(starId, peerId)
+	}
+
+	_updateIdMapsFromIGM(igm) {
+
+		if (this.self.starId == null || 
+			igm.to.starId == null || 
+			igm.from.starId == null) throw Error('Some starId is null')
+
+		if (!this.peerId2StarId.has(igm.to.peerId)) {
+			this.peerId2StarId.set(igm.to.peerId, igm.to.starId)
+		} 
+		if (!this.starId2PeerId.has(igm.to.starId)) {
+			this.starId2PeerId.set(igm.to.starId, igm.to.peerId)
+		} 
+
+		if (!this.peerId2StarId.has(igm.from.peerId)) {
+			this.peerId2StarId.set(igm.from.peerId, igm.from.starId)
+		} 
+		if (!this.starId2PeerId.has(igm.from.starId)) {
+			this.starId2PeerId.set(igm.from.starId, igm.from.peerId)
+		} 
 	}
 
 	getChats() {
