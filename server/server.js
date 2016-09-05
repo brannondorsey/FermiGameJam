@@ -87,26 +87,27 @@ function assignStar (geo, ids) {
             star =>
                 assignedStars.indexOf(star.id) === -1
         )
-        .sort(
-            (star1, star2) =>
-                {
-                    let star1_ca = centralAngle(
-                        lat,
-                        lon,
-                        star1.decrad,
-                        star1.rarad
-                    )
 
-                    let star2_ca = centralAngle(
-                        lat,
-                        lon,
-                        star2.decrad,
-                        star2.rarad
-                    )
+    sorted_star_list.sort(
+        (star1, star2) =>
+            {
+                let star1_ca = centralAngle(
+                    lat,
+                    lon,
+                    star1.decrad,
+                    star1.rarad
+                )
 
-                    return (star1_ca < star2_ca)?-1:1
-                }
-        )
+                let star2_ca = centralAngle(
+                    lat,
+                    lon,
+                    star2.decrad,
+                    star2.rarad
+                )
+
+                return (star1_ca < star2_ca)?-1:1
+            }
+    )
 
     return sorted_star_list[sorted_star_list.length - 1].id
 }
