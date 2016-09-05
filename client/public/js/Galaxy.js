@@ -31,7 +31,6 @@ class Galaxy {
 			        this.hyg.sort((a, b) => (a.dist < b.dist) ? -1 : 1 )
 			       
 			        resolve()
-			        
 			        this._init()
 			        this._animate()
 			    
@@ -108,10 +107,12 @@ class Galaxy {
 	}
 
 	_animate() {
+		
+    	requestAnimationFrame(() => {
+    		return this._animate()
+    	})
 
-    	requestAnimationFrame(animate)
-
-    	render()
+    	this._render()
     	this.stats.update()
 	}
 
