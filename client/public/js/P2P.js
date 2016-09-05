@@ -6,11 +6,10 @@ class P2P extends EventEmitter {
 		this._conns = new Map()
 		this._events = [
 			'ice_connected',
-			'civ_assigned',
 			'civ_connected',
 			'civ_disconnected',
 			'civ_log_received',
-			'igm',
+			'igm_received',
 			'igm_contact',
 			'igm_chat',
 			'igm_ping',
@@ -93,7 +92,7 @@ class P2P extends EventEmitter {
 
 	_handlePeerMessage(id, igm) {
 		
-		this.emitEvent('igm', [id, igm])
+		this.emitEvent('igm_received', [id, igm])
 
 		switch (igm.type) {
 			case 'contact':
