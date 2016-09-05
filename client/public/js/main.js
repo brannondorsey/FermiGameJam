@@ -66,7 +66,6 @@ p2p.on('igm_chat', (id, igm) => {
 
 p2p.on('igm_contact', (id, igm) => {
 	console.log(`[igm_contact]: `)
-        p2p.sendLog(id, civLog.log)
 	console.log(igm)
 })
 
@@ -76,13 +75,14 @@ p2p.on('igm_ping', (id, igm) => {
         if (!civLog.peerId2StarId.has(id)) {
            civLog.updateIdMaps(id, igm.from.starId)
            p2p.sendIGM(id, civLog.createIGM(id, 'contact', null))
-           p2p.sendLog(id, civLog.log)
         }
 
 	p2p.sendIGM(id, civLog.createIGM(id, 'ack', null))
+        p2p.sendLog(id, civLog.log)
 })
 
 p2p.on('igm_ack', (id, igm) => {
+        p2p.sendLog(id, civLog.log)
 	console.log(`[igm_ack]`)
 })
 
