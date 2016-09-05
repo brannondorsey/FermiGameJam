@@ -5,6 +5,9 @@ let io = require('socket.io')();
 
 // map between peerIds and starIds
 let ids = new Map()
+// map between dead peerIds and their starIds
+let dead_ids = new Map
+
 let peerServer = PeerServer({port: 9000, path: '/fermi'})
 
 // reads star catalogue into object
@@ -35,6 +38,7 @@ peerServer.on('connection', id => {
 
 io.on('connection', socket =>
     {
+        let peerId = null
         console.log('a socket.io client connected')
         socket.on('geolocation', geolocation =>
             {
@@ -57,10 +61,14 @@ io.on('connection', socket =>
                 }
                 // star assignment
                 socket.emit('star_assignment', ids.get(id))
+                peerId = id
                 console.log(`assigned star ${ids.get(id)} to id ${id}`)
 
                 // initial introduction
-                let potential_friends = Array.from(ids.keys()).filter(key => key !== id)
+                let potential_friends = Array.from(ids.keys())
+                    .filter(
+                        key => (key !== id) && !dead_ids.has(key)
+                    )
                 if (potential_friends.length > 0) {
                     let friend_peer_id = potential_friends[
                         Math.floor(Math.random() * potential_friends.length)
@@ -76,6 +84,15 @@ io.on('connection', socket =>
                     console.log(`introduced ${id} (${ids.get(id)}) to ${friend_peer_id} (${friend_star_id})`)
                 }
 
+            }
+        )
+        socket.on('disconnect', () =>
+            {
+                if (peerId !== null) {
+                    let starId = ids.get(peerId)
+                    console.log(`${peerId} (${starId}) has died`)
+                    dead_ids.set(peerId, starId)
+                }
             }
         )
     }

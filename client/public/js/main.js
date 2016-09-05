@@ -7,7 +7,7 @@ socket.on('star_assignment', starId => {
 socket.on('star_introduction', ({peerId, starId}) => {
 	console.log('[star_introduction]')
 	civLog.updateIdMaps(peerId, starId)
-	p2p.connect(id)
+	p2p.connect(peerId)
 		.then((id) => {
 			p2p.sendIGM(id, civLog.createIGM(id, 'chat', 'Hello, World!'))
 		})
@@ -96,7 +96,7 @@ function getGeolocation() {
 
 		if ('geolocation' in navigator) {
 			let pos = navigator.geolocation.getCurrentPosition(success, fail)
-		
+
 			function success(pos) {
 				res(pos)
 			}
