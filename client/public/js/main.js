@@ -5,11 +5,11 @@ socket.on('star_assignment', starId => {
 })
 
 socket.on('star_introduction', ({peerId, starId}) => {
-	console.log('[star_introduction]')
+	console.log(`introduced to ${peerId} (${starId})`)
 	civLog.updateIdMaps(peerId, starId)
 	p2p.connect(peerId)
 		.then((id) => {
-			p2p.sendIGM(id, civLog.createIGM(id, 'chat', 'Hello, World!'))
+                        p2p.sendIGM(id, civLog.createIGM(id, 'ping', null))
 		})
 		.catch(err => { throw err })
 })
@@ -35,8 +35,6 @@ p2p.on('ice_connected', (id) => {
 
 p2p.on('civ_connected', (id) => {
 	console.log(`[civ_connected]: ${id}`)
-	p2p.sendIGM(id, civLog.createIGM(id, 'contact', null))
-	p2p.sendLog(id, civLog.log)
 })
 
 p2p.on('civ_log_received', (id, log) => {
@@ -44,17 +42,19 @@ p2p.on('civ_log_received', (id, log) => {
 	civLog.merge(id, log)
 })
 
-p2p.on('civ_disconnected', (id) => console.log(`civilization ${id} connected`))
+p2p.on('civ_disconnected', (id) => console.log(`civilization ${id} disconnected`))
 
 // IGM SENT AND RECEIVED
 p2p.on('igm_received', (id, igm) => {
 	console.log('[igm_received]: Adding igm to civ log')
+        console.log(igm)
 	// debugger
 	civLog.addIGM(igm)
 })
 
 p2p.on('igm_sent', (id, igm) => {
 	console.log('[igm_sent]: Adding igm to civ log')
+        console.log(igm)
 	// debugger
 	civLog.addIGM(igm)
 })
@@ -71,10 +71,18 @@ p2p.on('igm_contact', (id, igm) => {
 
 p2p.on('igm_ping', (id, igm) => {
 	console.log(`[igm_ping]`)
+
+        if (!civLog.peerId2StarId.has(id)) {
+           civLog.updateIdMaps(id, igm.from.starId)
+           p2p.sendIGM(id, civLog.createIGM(id, 'contact', null))
+        }
+
 	p2p.sendIGM(id, civLog.createIGM(id, 'ack', null))
+        p2p.sendLog(id, civLog.log)
 })
 
 p2p.on('igm_ack', (id, igm) => {
+        p2p.sendLog(id, civLog.log)
 	console.log(`[igm_ack]`)
 })
 

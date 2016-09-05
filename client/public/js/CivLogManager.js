@@ -95,9 +95,6 @@ class CivLogManager {
 		let igm = JSON.parse(JSON.stringify(this._igm))
 		igm.to.peerId = toPeerId
 		igm.to.starId = this.peerId2StarId.get(toPeerId)
-
-		debugger
-
 		igm.from = this.self
 		igm.timestamp = Date.now()
 		igm.type = type
