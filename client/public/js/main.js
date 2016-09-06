@@ -44,7 +44,18 @@ p2p.on('civ_log_received', (id, log) => {
 	civLog.merge(id, log)
 })
 
-p2p.on('civ_disconnected', (id) => console.log(`civilization ${id} disconnected`))
+p2p.on('civ_disconnected', (id) =>
+    {
+        if (civLog.peerId2StarId.has(id)) {
+            starId = civLog.peerId2StarId.get(id)
+            civLog.addIGM(
+                civLog.createIGM(civLog.self.peerId, 'death', starId)
+            )
+        }
+
+        console.log(`civilization ${id} disconnected`)
+    }
+)
 
 // IGM SENT AND RECEIVED
 p2p.on('igm_received', (id, igm) => {
