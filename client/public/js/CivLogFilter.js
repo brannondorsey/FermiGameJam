@@ -60,11 +60,11 @@ class CivLogFilter {
     // constructs an array of all the star ids of every `to` field
     // optional id to filter out
     all_star_ids_to (id) {
-        ids = []
+        let ids = []
 
         this.log.forEach(
             igm => {
-                to_id = igm.to.starId
+                let to_id = igm.to.starId
 
                 if (to_id !== id) {
                     if (ids.indexOf(to_id) === -1) {
@@ -80,11 +80,11 @@ class CivLogFilter {
     // constructs an array of all the star ids of every `from` field
     // optional id to filter out
     all_star_ids_from (id) {
-        ids = []
+        let ids = []
 
         this.log.forEach(
             igm => {
-                from_id = igm.from.starId
+                let from_id = igm.from.starId
 
                 if (from_id !== id) {
                     if (ids.indexOf(from_id) === -1) {
@@ -100,10 +100,10 @@ class CivLogFilter {
     // constructs an array of all star ids of every participant in the log
     // optional id to filter out
     all_star_ids (id) {
-        to_ids = all_star_ids_to(id)
-        from_ids = all_star_ids_from(id)
+        let to_ids = this.all_star_ids_to(id)
+        let from_ids = this.all_star_ids_from(id)
 
-        ids = to_ids.slice()
+        let ids = to_ids.slice()
         from_ids.forEach(
             from_id => {
                 if (ids.indexOf(from_id) === -1) {
@@ -117,4 +117,4 @@ class CivLogFilter {
 }
 
 // convenience
-let clf = (log) => new CivLogfilter(log)
+let clf = (log) => new CivLogFilter(log)

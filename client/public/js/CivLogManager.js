@@ -104,4 +104,60 @@ class CivLogManager {
 			this.starId2PeerId.set(igm.from.starId, igm.from.peerId)
 		}
 	}
+
+        definitelyGetStarId(peerId, starId) {
+            if (starId == null) {
+                starId = this.peerId2StarId.get(peerId)
+            }
+
+            return starId
+        }
+
+        // CIV LOG FILTER FUNCTIONS - FOR MESSAGE READTHROUGH, VISUALIZATION
+
+        // constructs a list of star ids that the input star / peer id have
+        // direct connecitons with
+        firstDegreeConnections (peerId, starId) {
+            if (peerId == null) {
+                peerId = this.starId2PeerId.get(starId)
+            }
+
+            if (starId == null) {
+                starId = this.peerId2StarId.get(peerId)
+            }
+
+            return clf(this.log).to_or_from(peerId).all_star_ids(starId)
+        }
+
+        // constructs a list of lists, one for each `n`:
+        //      each list contains tuples representing star connections branching
+        //      out from the input star / peer id
+        nDegreeConnections (peerId, starId, n) {
+            starId = this.definitelyGetStarId(peerId, starId)
+            let degree_array = []
+
+            for (let i = 0; i < n; i++) {
+                let tuple_array = []
+
+                if (i === 0) {
+                    this.firstDegreeConnections(peerId, starId).forEach(
+                        conn_starId => tuple_array.push([starId, conn_starId])
+                    )
+                } else {
+                    degree_array[i - 1].forEach(
+                        connection_tuple => {
+                            let [from_starId, to_starId] = connection_tuple
+
+                            this.firstDegreeConnections(null, to_starId).forEach(
+                                conn_starId => tuple_array.push([to_starId, conn_starId])
+                            )
+                        }
+                    )
+                }
+
+                degree_array.push(tuple_array)
+            }
+
+            return degree_array
+        }
 }
