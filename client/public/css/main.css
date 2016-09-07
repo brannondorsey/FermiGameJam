@@ -1,3 +1,41 @@
 body {
     background: #000000;
+    font-size: 17px;
+}
+
+#ui-container {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	z-index: 5;
+	overflow-y: scroll;
+}
+
+#menu {
+	width: 100%;
+	position: fixed;
+	background: #fff;
+}
+
+#journal {
+	margin: auto;
+	width: 80%;
+	margin-top: 100px;
+	background: rgba(0, 0, 0, 0.7);
+	border: 1px solid white;
+	padding: 30px;
+	z-index: 10;
+}
+
+.table {
+	margin: auto;
+	width: 80%;
+	margin-top: 100px;
+	background: rgba(0, 0, 0, 0.7);
+	pointer-events: none;
+
+}
+
+.hide {
+	display: none;
 }

@@ -1,11 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<title>Fermi Game Jam</title>
+		<link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.css">
         <link rel="stylesheet" href="css/main.css">
+        <script id="vertexShader" type="x-shader/x-vertex">
+			precision mediump float;
+			precision mediump int;
+			uniform mat4 modelViewMatrix; // optional
+			uniform mat4 projectionMatrix; // optional
+			attribute vec3 position;
+			attribute vec4 color;
+			varying vec3 vPosition;
+			varying vec4 vColor;
+			void main()	{
+				vPosition = position;
+				vColor = color;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			}
+		</script>
+
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			uniform float time;
+			varying vec3 vPosition;
+			varying vec4 vColor;
+			void main()	{
+				vec4 color = vec4( vColor );
+				// color.r += sin( vPosition.x * 10.0 + time ) * 0.5;
+				gl_FragColor = color;
+			}
+		</script>
 </head>
 <body>
+
+	<div id='ui-container'>
+		
+		<ul id="menu" class="nav nav-pills">
+		  <li id="explore-button" class="active"><a href="#">EXPLORE</a></li>
+		  <li id="communicate-button"><a href="#">COMMUNICATE</a></li>
+		  <li id="log-button"><a href="#">LOG</a></li>
+		  <li id="journal-button"><a href="#">JOURNAL</a></li>
+		</ul>
+		<div id="journal hide">
+			<!--Planet forms with complex organic molecules...<br>
+			Water forms on Planet...<br>
+			Nearby collision creates a barage of meteiroids close to planet...<br>
+			Impact events create thermal flux resulting in early biotic life...<br>
+			Cells resembling prokaryotes appear...<br>
+			Atmospheric oxygen accumulates...<br>
+			Prolonged photosynthesis...<br>
+			Eukaryotes evolve into mult-cellular organisms...<br>
+			Intelligence arises...<br>
+			Language develops...<br>
+			Coordinated space exploration begins...<br>
+			Life found on nearby planets...<br>
+			Star system colonized...<br>
+			Scientific discovery leads to Faster-than-light communication...<br>
+			Search for Extra-Stellar Intelligence begins in earnest...<br><br>
+			...Contact.-->
+		</div>
+		<table id="log" class="table table-condensed table-bordered hide">
+ 		  <tr>
+		    <th>Date</th>
+		    <th>Type</th>
+		    <th>To</th> 
+		    <th>From</th>
+		    <th>Data</th>
+		  </tr>
+		</table>
+	</div>
+
 	<div id='threejs-container'></div>
+	<script type="text/javascript" src="js/lib/jquery-3.1.0.min.js"></script>
 	<script type="text/javascript" src="js/lib/socket.io-1.4.5.js"></script>
 	<script type="text/javascript" src="js/lib/peer.js"></script>
 	<script type="text/javascript" src="js/lib/EventEmitter.js"></script>
@@ -17,12 +86,14 @@
 	<script type="text/javascript" src="js/lib/Detector.js"></script>
 	<script type="text/javascript" src="js/lib/FlyControls.js"></script>
 	<script type="text/javascript" src="js/lib/papaparse.js"></script>
-	
+
 	<script type="text/javascript" src="js/P2P.js"></script>
 	<script type="text/javascript" src="js/CivLogManager.js"></script>
 	<script type="text/javascript" src="js/CivLogFilter.js"></script>
 	<script type="text/javascript" src="js/Galaxy.js"></script>
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript" src="js/render.js"></script>
+	<script type="text/javascript" src="js/ui.js"></script>
+
 </body>
 </html>
