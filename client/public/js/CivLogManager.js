@@ -155,6 +155,9 @@ class CivLogManager {
                     )
                 }
 
+                // short circuit
+                if (tuple_array.length < 1) return degree_array
+
                 degree_array.push(tuple_array)
             }
 
