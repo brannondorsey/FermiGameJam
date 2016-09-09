@@ -11,6 +11,13 @@ body {
 	overflow: hidden;
 }
 
+#ui-flex {
+	display: flex;
+	justify-content: flex-left;
+	width: 100%;
+	height: 100%;
+}
+
 #ui-right-panel {
     display: flex;
     flex-direction: column-reverse;
@@ -23,43 +30,47 @@ body {
     align-content: stretch;
 }
 
+#ui-left-panel {
+	margin-top: 30px;
+	margin-left: 20px;
+	height: 100%;
+	min-width: 250px;
+}
+
 #menu {
 	width: 100%;
 	background: #fff;
 }
 
 #explore-container {
-	margin-top: 30px;
-	margin-left: 20px;
-	height: 100%;
-	/*overflow: auto;*/
-}
-
-#explore-table-container::-webkit-scrollbar { width: 0 !important; }
-#explore-table-container { overflow: -moz-scrollbars-none; }
-
-#explore-table-container {
 	margin-top: 10px;
 	margin-bottom: 10px; /* why doesn't this work? */
-	width: 20%;
-	height: 80%;
+	height: 85%;
 	overflow: scroll;
 }
 
-#explore-container .btn-group {
+#explore-container::-webkit-scrollbar { width: 0 !important; }
+#explore-container { overflow: -moz-scrollbars-none; }
+
+#explore-container-parent {
+	overflow: auto;
+	height: 100%;
+}
+
+#ui-left-panel .btn-group {
 	color: black;
 }
 
-#explore-container .btn {
+#ui-left-panel .btn {
 	margin-right: 10px;
 }
 
-#explore-container .btn::first-letter {
+#ui-left-panel .btn::first-letter {
 	color: black;
 }
 
 
-#explore-container .btn::first-letter:hover {
+#ui-left-panel .btn::first-letter:hover {
 	color: inherit;
 }
 
