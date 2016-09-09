@@ -7,6 +7,11 @@ class CivLogManager {
 		this.peerId2StarId = new Map()
 		this.starId2PeerId = new Map()
 
+                this.starId2StarName = new Map()
+                this.starName2StarId = new Map()
+
+                this.nameGenerator = new NameGenerator()
+
 		this._igm = {
 			to: {
 				peerId: null,
@@ -36,6 +41,20 @@ class CivLogManager {
 
 	}
 
+        // generates and assignes a new star name
+        newStarName (starId) {
+            let new_name = this.nameGenerator.name()
+            console.log(new_name)
+            this.addStarName(starId, new_name)
+            return new_name
+        }
+
+        // adds a new star name to the maps
+        addStarName (starId, starName) {
+            this.starId2StarName.set(starId, starName)
+            this.starName2StarId.set(starName, starId)
+        }
+
         // adds an igm to the log
 	addIGM(igm, checkUnique) {
 		if (checkUnique) {
@@ -64,6 +83,7 @@ class CivLogManager {
         // inserts yourself into the id maps
 	begin(starId) {
 		this.self.starId = starId
+                this.newStarName(starId)
 		this.peerId2StarId.set(this.self.peerId, this.self.starId)
 		this.starId2PeerId.set(this.self.starId, this.self.peerId)
 	}
@@ -78,6 +98,7 @@ class CivLogManager {
 
         // updates the id maps with a new peer-star pair
 	updateIdMaps(id, starId) {
+                this.newStarName(starId)
 		this.peerId2StarId.set(id, starId)
 		this.starId2PeerId.set(starId, id)
 	}
@@ -94,6 +115,7 @@ class CivLogManager {
 			this.peerId2StarId.set(igm.to.peerId, igm.to.starId)
 		}
 		if (!this.starId2PeerId.has(igm.to.starId)) {
+                        this.newStarName(igm.to.starId)
 			this.starId2PeerId.set(igm.to.starId, igm.to.peerId)
 		}
 
@@ -101,6 +123,7 @@ class CivLogManager {
 			this.peerId2StarId.set(igm.from.peerId, igm.from.starId)
 		}
 		if (!this.starId2PeerId.has(igm.from.starId)) {
+                        this.newStarName(igm.from.starId)
 			this.starId2PeerId.set(igm.from.starId, igm.from.peerId)
 		}
 	}
