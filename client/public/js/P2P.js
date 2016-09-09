@@ -18,7 +18,7 @@ class P2P extends EventEmitter {
 		]
 
 		this._peer = new Peer({
-			host: 'localhost',
+			host: window.location.hostname,
 			port: 9000,
 			path: '/fermi'
 		});
