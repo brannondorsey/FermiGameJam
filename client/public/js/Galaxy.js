@@ -250,10 +250,12 @@ class Galaxy {
 
 	_loadHYG() {
 	    return new Promise((resolve, reject) => {
+	    	// Papa.SCRIPT_PATH = 'lib/papaparse.js'
 	        Papa.parse('data/hygdata_v3.csv', {
 	            download: true,
 	            header: true,
 	            dynamicTyping: true,
+	            // worker: true,
 	            complete: (results) => resolve(results.data),
 	            error: (err) => reject(err)
 	         })
