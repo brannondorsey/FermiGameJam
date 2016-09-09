@@ -1,7 +1,7 @@
 let galaxy = new Galaxy(civLog)
-galaxy.load()
-    .then(() => console.log('loaded the galaxy'))
-    .catch(err => { throw err })
+// galaxy.load()
+//     .then(() => console.log('loaded the galaxy'))
+//     .catch(err => { throw err })
 
 // let hyg = null
 

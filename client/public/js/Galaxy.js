@@ -1,7 +1,7 @@
 // Handles rendering of galaxy and all things Three.js
 class Galaxy {
 			
-	constructor(civLogManager) {
+	constructor() {
 
 		if (!Detector.webgl) Detector.addGetWebGLMessage()
 
@@ -20,7 +20,6 @@ class Galaxy {
 		this.scale = 100
 
 		this.graphMesh = null
-		this.civLog = civLogManager
 	}
 
 	load() {
@@ -38,6 +37,108 @@ class Galaxy {
 			    
 			    }).catch(err => reject(err))
 		})
+	}
+
+	drawConnections(civLogConnections) {
+
+		if (!(civLogConnections instanceof Array) || civLogConnections.length < 1) 
+			return
+
+		let cons = civLogConnections  
+		let opacity = 1.0
+		let decrement = opacity / civLogConnections.length
+		let numLines = cons.reduce((sum, con) => sum + con.length, 0)
+		let positions = new Float32Array(numLines * 3 * 2)
+		let counter = 0
+
+		// positions
+		cons.forEach(degree => {
+			degree.forEach(pair => {
+				
+				let s1 = this.hyg.get(pair[0])
+				let s2 = this.hyg.get(pair[1])
+
+				positions[counter]     = s1.x * this.scale
+				positions[counter + 1] = s1.y * this.scale
+				positions[counter + 2] = s1.z * this.scale
+
+				positions[counter + 3] = s2.x * this.scale
+				positions[counter + 4] = s2.y * this.scale
+				positions[counter + 5] = s2.z * this.scale
+				counter += 6
+			})
+		})
+
+		counter = 0
+
+		let colors = new Float32Array(numLines * 4 * 2)
+
+		let c = [[255, 0, 0],
+				 [255, 252, 25],
+				 [20, 133, 204]]
+
+		c = c.map(d => d.map(e => mapRange(e, 0, 255, 0, 1)))
+		
+		let ic = 0
+
+		cons.forEach(con => {
+			con.forEach(pair => {
+					
+				ic = ic % c.length
+
+				colors[counter]     = c[ic][0]
+				colors[counter + 1] = c[ic][1]
+				colors[counter + 2] = c[ic][2]
+				colors[counter + 3] = 1
+				colors[counter + 4] = c[ic][0]
+				colors[counter + 5] = c[ic][1]
+				colors[counter + 6] = c[ic][2]
+				colors[counter + 7] = 1
+
+				// colors[counter]     = 1
+				// colors[counter + 1] = 1
+				// colors[counter + 2] = 1
+				// colors[counter + 3] = opacity
+				// colors[counter + 4] = 1
+				// colors[counter + 5] = 1
+				// colors[counter + 6] = 1
+				// colors[counter + 7] = opacity
+
+				ic++
+				counter += 8
+			})
+			opacity -= decrement
+		})
+
+		let geometry = new THREE.BufferGeometry()
+		// let material = new THREE.LineBasicMaterial({ vertexColors: THREE.VertexColors });
+	    let material = new THREE.RawShaderMaterial( {
+			uniforms: {
+				// time: { value: 1.0 }
+			},
+			vertexShader: document.getElementById( 'vertexShader' ).textContent,
+			fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+			transparent: true
+		} );
+
+		geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
+		geometry.addAttribute('color', new THREE.BufferAttribute(colors, 4))
+
+		geometry.computeBoundingSphere();
+
+		if (this.graphMesh) this.scene.remove(this.graphMesh)
+		this.graphMesh = new THREE.Line(geometry, material)
+		this.scene.add(this.graphMesh)
+
+		function getRandomInt(min, max) {
+		  	min = Math.ceil(min)
+		  	max = Math.floor(max)
+		  	return Math.floor(Math.random() * (max - min)) + min
+		}
+
+		function mapRange(value, low1, high1, low2, high2) {
+		    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+		}
 	}
 
 	_init(db) {
@@ -109,82 +210,6 @@ class Galaxy {
 	    }, false );
 	}
 
-	_drawLines() {
-
-		let numCons = 3
-		let cons = civLog.nDegreeConnections(null, civLog.self.starId, numCons)
-		let opacity = 1.0
-		let decrement = opacity / numCons
-		let numLines = cons.reduce((sum, con) => sum + con.length, 0)
-		let positions = new Float32Array(numLines * 3 * 2)
-		let counter = 0
-
-		// positions
-		cons.forEach(degree => {
-			degree.forEach(pair => {
-				
-				let s1 = this.hyg.get(pair[0])
-				let s2 = this.hyg.get(pair[1])
-
-				positions[counter]     = s1.x * this.scale
-				positions[counter + 1] = s1.y * this.scale
-				positions[counter + 2] = s1.z * this.scale
-
-				positions[counter + 3] = s2.x * this.scale
-				positions[counter + 4] = s2.y * this.scale
-				positions[counter + 5] = s2.z * this.scale
-				counter += 6
-			})
-		})
-
-		counter = 0
-
-		let colors = new Float32Array(numLines * 4 * 2)
-
-		cons.forEach(con => {
-			con.forEach(pair => {
-				
-				colors[counter]     = 1
-				colors[counter + 1] = 1
-				colors[counter + 2] = 1
-				colors[counter + 3] = opacity
-				colors[counter + 4] = 1
-				colors[counter + 5] = 1
-				colors[counter + 6] = 1
-				colors[counter + 7] = opacity
-
-				counter += 8
-			})
-			opacity -= decrement
-		})
-
-		let geometry = new THREE.BufferGeometry()
-		// let material = new THREE.LineBasicMaterial({ vertexColors: THREE.VertexColors });
-	    let material = new THREE.RawShaderMaterial( {
-			uniforms: {
-				// time: { value: 1.0 }
-			},
-			vertexShader: document.getElementById( 'vertexShader' ).textContent,
-			fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-			transparent: true
-		} );
-
-		geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
-		geometry.addAttribute('color', new THREE.BufferAttribute(colors, 4))
-
-		geometry.computeBoundingSphere();
-
-		if (this.graphMesh) this.scene.remove(this.graphMesh)
-		this.graphMesh = new THREE.Line(geometry, material)
-		this.scene.add(this.graphMesh)
-
-		function getRandomInt(min, max) {
-		  	min = Math.ceil(min)
-		  	max = Math.floor(max)
-		  	return Math.floor(Math.random() * (max - min)) + min
-		}
-	}
-
 	_animate() {
 		
     	requestAnimationFrame(() => {
@@ -225,10 +250,12 @@ class Galaxy {
 
 	_loadHYG() {
 	    return new Promise((resolve, reject) => {
+	    	// Papa.SCRIPT_PATH = 'lib/papaparse.js'
 	        Papa.parse('data/hygdata_v3.csv', {
 	            download: true,
 	            header: true,
 	            dynamicTyping: true,
+	            // worker: true,
 	            complete: (results) => resolve(results.data),
 	            error: (err) => reject(err)
 	         })

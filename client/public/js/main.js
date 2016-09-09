@@ -40,7 +40,7 @@ p2p.on('civ_connected', (id) => {
 })
 
 p2p.on('civ_log_received', (id, log) => {
-	console.log(`[civ_log_received]: ${log}`)
+	console.log(`[civ_log_received]: ${log.length}`)
 	civLog.merge(id, log)
 })
 
