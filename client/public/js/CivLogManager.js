@@ -171,20 +171,10 @@ class CivLogManager {
             let degree_array = []
             let connection_counts = new Map()
 
-            let cache_connection = (starId) => {
-                if (!connection_counts.has(starId)) {
-                    connection_counts.set(
-                        starId,
-                        this.firstDegreeConnections(starId)
-                    )
-                }
-            }
-
             let insert_tuples = (tuple_array, from_starId) => {
                 this.firstDegreeConnections(null, from_starId).forEach(
                     to_starId => {
                         tuple_array.push([from_starId, to_starId])
-                        cache_connection(to_starId)
                     }
                 )
             }
@@ -193,7 +183,6 @@ class CivLogManager {
                 let tuple_array = []
 
                 if (i === 0) {
-                    cache_connection(starId)
                     insert_tuples(tuple_array, starId)
                 } else {
                     degree_array[i - 1].forEach(
