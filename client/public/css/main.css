@@ -145,19 +145,19 @@ body {
 
 /* CHATTING */
 
+#chat-button {
+	visibility: hidden;
+}
+
 #chat {
 	order: 1;
-	/*position: absolute;*/
-	display: flex;
+	display: none; /*START HIDDEN, REALLY: display: flex;*/
 	flex-direction: column;
-	/*width: 30%;*/
 	height: 50%;
 	background-color: rgba(0, 0, 0, 0.7);
 	border: 1px solid white;
 	margin-bottom: 20px;
 	max-height: 500px;
-	/*right: 20px;*/
-	/*bottom: 20px;*/
 }
 
 #chat-star-name {
@@ -178,6 +178,7 @@ body {
 	flex-direction: column;
 	overflow-y: scroll;
 	height: 100%;
+	min-height: 100px;
 }
 
 #chat-input {
@@ -222,5 +223,5 @@ body {
 }
 
 .alive {
-
+	background-color: rgba(0, 255, 0, 0.5)
 }

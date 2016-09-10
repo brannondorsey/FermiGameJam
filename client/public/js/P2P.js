@@ -65,8 +65,12 @@ class P2P extends EventEmitter {
 
 	_registerPeerEvents(conn, resolve, reject) {
 
+		let timeout = setTimeout(reject, 1000)
+
 		conn.on('open', () => {
-			console.log('opened')
+
+			clearTimeout(timeout) 
+			console.log('clearing timeout')
 			let id = conn.peer;
 			this._conns.set(id, conn)
 			
@@ -93,8 +97,6 @@ class P2P extends EventEmitter {
 			console.log('error')
 			if (reject) reject(err)
 		})
-
-		setTimeout(reject, 1000)
 	}
 
 	_handlePeerMessage(id, igm) {
