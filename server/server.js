@@ -147,8 +147,6 @@ function radians (degrees) {
 //  (values of `ids` must include `id` attribute)
 function assignStar (geo, ids) {
     // try to assign stars in a spherical shell
-    let goal_distance = 100
-
     let assignedStars = Array.from(ids.values()).map(civ => civ.star)
 
     let lat = radians(geo.lat)
@@ -162,8 +160,7 @@ function assignStar (geo, ids) {
 
     let calculate_metric = (star) => {
         let central_angle = centralAngle(lat, lon, star.decrad, star.rarad)
-        let dist = Math.abs(star.dist - goal_distance)
-        let metric = dist * dist * central_angle
+        let metric = star.dist * star.dist * Math.sqrt(central_angle)
         return metric
     }
 
