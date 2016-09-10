@@ -3,6 +3,7 @@ socket.on('star_assignment', starId => {
 	console.log('[star_assignment]')
 	civLog.begin(starId)
 	UI.starNameAssigned(starId)
+	galaxy.addSelf(starId)
 })
 
 socket.on('star_introduction', ({peerId, starId}) => {
