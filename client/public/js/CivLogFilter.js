@@ -13,8 +13,14 @@ class CivLogFilter {
         return clf(this.log.filter(igm => igm.from.peerId === peerId))
     }
 
+    // from first argument, to second argument
     between (senderId, recieverId) {
         return this.from(senderId).to(recieverId)
+    }
+
+    //
+    involving (interloc_a, interloc_b) {
+        return this.to_or_from(interloc_a).to_or_from(interloc_b)
     }
 
     to_or_from (peerId) {

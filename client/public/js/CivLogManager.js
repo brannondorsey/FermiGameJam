@@ -137,7 +137,19 @@ class CivLogManager {
             return starId
         }
 
+        peerIdFromStarName(starName) {
+            return this.starId2PeerId.get(this.starName2StarId.get(starName))
+        }
+
         // CIV LOG FILTER FUNCTIONS - FOR MESSAGE READTHROUGH, VISUALIZATION
+
+        // constructs a chronological list of chats between participants
+        getChats (starNameA, starNameB) {
+            peerIdA = peerIdFromStarName(starNameA)
+            peerIdB = peerIdFromStarName(starNameB)
+
+            return clf(this.log).involving(peerIdA, peerIdB).chronological().log
+        }
 
         // constructs a list of star ids that the input star / peer id have
         // direct connecitons with

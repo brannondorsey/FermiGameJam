@@ -1,6 +1,6 @@
 // Handles rendering of galaxy and all things Three.js
 class Galaxy {
-			
+
 	constructor() {
 
 		if (!Detector.webgl) Detector.addGetWebGLMessage()
@@ -11,7 +11,7 @@ class Galaxy {
 		this.geometry = null
 		this.stars = null
 		this.mouse = null
-		this.camera = null 
+		this.camera = null
 		this.controls = null
 		this.scene = null
 		this.renderer = null
@@ -26,25 +26,24 @@ class Galaxy {
 		return new Promise((resolve, reject) => {
 			this._loadHYG()
 			    .then(db => {
-			    
-			        console.log(`Loaded ${db.length} stars`)			       
-			        db = db.filter(star => (star.dist < 100000 && star.proper !== 'Sol'))
+
+			        console.log(`Loaded ${db.length} stars`)
 			       	db.forEach(s => this.hyg.set(s.id, s))
 
 			        resolve()
 			        this._init(db)
 			        this._animate()
-			    
+
 			    }).catch(err => reject(err))
 		})
 	}
 
 	drawConnections(civLogConnections) {
 
-		if (!(civLogConnections instanceof Array) || civLogConnections.length < 1) 
+		if (!(civLogConnections instanceof Array) || civLogConnections.length < 1)
 			return
 
-		let cons = civLogConnections  
+		let cons = civLogConnections
 		let opacity = 1.0
 		let decrement = opacity / civLogConnections.length
 		let numLines = cons.reduce((sum, con) => sum + con.length, 0)
@@ -54,7 +53,7 @@ class Galaxy {
 		// positions
 		cons.forEach(degree => {
 			degree.forEach(pair => {
-				
+
 				let s1 = this.hyg.get(pair[0])
 				let s2 = this.hyg.get(pair[1])
 
@@ -78,12 +77,12 @@ class Galaxy {
 				 [20, 133, 204]]
 
 		c = c.map(d => d.map(e => mapRange(e, 0, 255, 0, 1)))
-		
+
 		let ic = 0
 
 		cons.forEach(con => {
 			con.forEach(pair => {
-					
+
 				ic = ic % c.length
 
 				colors[counter]     = c[ic][0]
@@ -185,8 +184,8 @@ class Galaxy {
 
 	    this.geometry.computeBoundingSphere();
 
-	    let material = new THREE.PointsMaterial( { 
-	    	size: pointSize, 
+	    let material = new THREE.PointsMaterial( {
+	    	size: pointSize,
 	    	vertexColors: THREE.VertexColors,
 	    	transparent: true} );
 
@@ -211,7 +210,7 @@ class Galaxy {
 	}
 
 	_animate() {
-		
+
     	requestAnimationFrame(() => {
     		return this._animate()
     	})
