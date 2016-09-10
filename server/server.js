@@ -147,7 +147,7 @@ function radians (degrees) {
 //  (values of `ids` must include `id` attribute)
 function assignStar (geo, ids) {
     // try to assign stars in a spherical shell
-    let assignedStars = Array.from(ids.values()).map(civ => civ.star)
+    let assignedStars = Array.from(ids.values())
 
     let lat = radians(geo.lat)
     let lon = radians(geo.lon)
