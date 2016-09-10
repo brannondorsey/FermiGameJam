@@ -138,7 +138,7 @@ class CivLogManager {
         }
 
         peerIdFromStarName(starName) {
-            return this.starId2PeerId.get(this.starName2StarId.get(starName))
+            Creturn this.starId2PeerId.get(this.starName2StarId.get(starName))
         }
 
         // CIV LOG FILTER FUNCTIONS - FOR MESSAGE READTHROUGH, VISUALIZATION
@@ -195,6 +195,20 @@ class CivLogManager {
 
                 degree_array.push(tuple_array)
             }
+
+            degree_array.forEach(
+                (tuple_array) => tuple_array.sort(
+                    (left_tuple, right_tuple) => {
+                        let left_id = left_tuple[1]
+                        let right_id = right_tuple[1]
+
+                        let left_connects = firstDegreeConnections(null, left_id).length
+                        let right_connects = firstDegreeConnections(null, right_id).length
+
+                        return (left_connects < right_connects) ? -1 : 1
+                    }
+                )
+            )
 
             return degree_array
         }
