@@ -170,22 +170,37 @@ class CivLogManager {
         nDegreeConnections (peerId, starId, n) {
             starId = this.definitelyGetStarId(peerId, starId)
             let degree_array = []
+            let connection_counts = new Map()
+
+            let cache_connection = (starId) => {
+                if (!connection_counts.includes(starId) {
+                    connection_counts.set(
+                        starId,
+                        this.firstDegreeConnections(starId)
+                    )
+                }
+            }
+
+            let insert_tuples = (tuple_array, from_starId) => {
+                this.firstDegreeConnections(null, from_starId).forEach(
+                    to_starId => {
+                        tuple_array.push([from_starId, to_starId])
+                        cache_connection(to_starId)
+                    }
+                )
+            }
 
             for (let i = 0; i < n; i++) {
                 let tuple_array = []
 
                 if (i === 0) {
-                    this.firstDegreeConnections(peerId, starId).forEach(
-                        conn_starId => tuple_array.push([starId, conn_starId])
-                    )
+                    cache_connection(starId)
+                    insert_tuples(tuple_array, starId)
                 } else {
                     degree_array[i - 1].forEach(
                         connection_tuple => {
                             let [from_starId, to_starId] = connection_tuple
-
-                            this.firstDegreeConnections(null, to_starId).forEach(
-                                conn_starId => tuple_array.push([to_starId, conn_starId])
-                            )
+                            insert_tuples(tuple_array, to_starId)
                         }
                     )
                 }
@@ -193,22 +208,20 @@ class CivLogManager {
                 // short circuit
                 if (tuple_array.length < 1) return degree_array
 
-                degree_array.push(tuple_array)
-            }
-
-            degree_array.forEach(
-                (tuple_array) => tuple_array.sort(
+                tiple_array.sort(
                     (left_tuple, right_tuple) => {
                         let left_id = left_tuple[1]
                         let right_id = right_tuple[1]
 
-                        let left_connects = firstDegreeConnections(null, left_id).length
-                        let right_connects = firstDegreeConnections(null, right_id).length
+                        let left_connections = connection_counts.get(left_id)
+                        let right_connections = connection_counts.get(right_id)
 
-                        return (left_connects < right_connects) ? -1 : 1
+                        return (left_connections < right_connections) ? -1 : 1
                     }
                 )
-            )
+
+                degree_array.push(tuple_array)
+            }
 
             return degree_array
         }
