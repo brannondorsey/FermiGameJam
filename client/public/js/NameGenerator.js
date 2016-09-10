@@ -9,84 +9,43 @@ class NameGenerator {
             "bayer",
             (assigned_names) => {
                 let prefix_letters = [
-                    "α",
-                    "β",
-                    "γ",
-                    "δ",
-                    "ε",
-                    "ζ",
-                    "η",
-                    "θ",
-                    "ι",
-                    "κ",
-                    "λ",
-                    "μ",
-                    "ν",
-                    "ξ",
-                    "ο",
-                    "π",
-                    "ρ",
-                    "ς",
-                    "τ",
-                    "υ",
-                    "φ",
-                    "χ",
-                    "ψ",
-                    "ω",
-                    "Γ",
-                    "Δ",
-                    "Λ",
-                    "Ξ",
-                    "Π",
-                    "Σ",
-                    "Φ",
-                    "Ψ",
-                    "Ω",
-                    "b",
-                    "c",
-                    "d",
-                    "e",
-                    "f",
-                    "g",
-                    "h",
-                    "i",
-                    "j",
-                    "l",
-                    "m",
-                    "n",
-                    "q",
-                    "r",
-                    "s",
-                    "t",
-                    "x",
-                    "y",
-                    "z",
-                    "A",
-                    "B",
-                    "C",
-                    "D",
-                    "E",
-                    "F",
-                    "G",
-                    "H",
-                    "I",
-                    "J",
-                    "K",
-                    "L",
-                    "M",
-                    "N",
-                    "O",
-                    "P",
-                    "Q",
-                    "R",
-                    "S",
-                    "T",
-                    "U",
-                    "V",
-                    "W",
-                    "X",
-                    "Y",
-                    "Z"
+                    "alpha",
+                    "beta",
+                    "gamma",
+                    "delta",
+                    "epsilon",
+                    "zeta",
+                    "eta",
+                    "theta",
+                    "iota",
+                    "kappa",
+                    "lambda",
+                    "mu",
+                    "nu",
+                    "xi",
+                    "omicron",
+                    "pi",
+                    "rho",
+                    "sigma",
+                    "tau",
+                    "upsilon"
+                    "phi",
+                    "chi",
+                    "psi",
+                    "omega",
+                ]
+
+                let numerals = [
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9"
                 ]
 
                 let constellations = [
@@ -186,11 +145,18 @@ class NameGenerator {
                         Math.floor(Math.random() * prefix_letters.length)
                     ]
 
+                    let num_1 = numerals[
+                        Math.floor(Math.random() * numerals.length)
+                    ]
+                    let num_2 = numerals[
+                        Math.floor(Math.random() * numerals.length)
+                    ]
+
                     let constellation = constellations[
                         Math.floor(Math.random() * constellations.length)
                     ]
 
-                    candidate_name = `${prefix} ${constellation}`
+                    candidate_name = `${prefix}-${num_1}${num_2} ${constellation}`
                 } while (assigned_names.includes(candidate_name))
 
                 return candidate_name
