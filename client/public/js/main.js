@@ -1,4 +1,4 @@
-let socket = io('localhost:3000')
+let socket = io(window.location.hostname + ':3000')
 socket.on('star_assignment', starId => {
 	console.log('[star_assignment]')
 	civLog.begin(starId)
