@@ -11,7 +11,7 @@ let dead_ids = new Map
 let peerServer = PeerServer({port: 9000, path: '/fermi'})
 
 // reads star catalogue into object
-let parsed_hygdata = Baby.parseFiles(
+let star_list = Baby.parseFiles(
     "data/hygdata_v3.csv",
     {
         header: true,
@@ -21,11 +21,6 @@ let parsed_hygdata = Baby.parseFiles(
         }
     }
 )
-
-// filters star catalogue
-let star_list = parsed_hygdata.data
-    .filter(star => ((star.proper !== 'Sol') && (star.dist < 100000)))
-
 
 peerServer.on('connection', id => {
 
