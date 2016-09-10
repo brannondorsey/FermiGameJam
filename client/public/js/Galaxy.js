@@ -6,6 +6,7 @@ class Galaxy {
 		if (!Detector.webgl) Detector.addGetWebGLMessage()
 
 		this.hyg = new Map()
+		this.loaded = false
 		this.container = null
 		this.stats = null
 		this.geometry = null
@@ -23,17 +24,25 @@ class Galaxy {
 		this.scale = 100
 		this.markedStarSize = 1000;
 
+		this.queuedWhileLoading = []
+
 	}
 
 	load() {
 		return new Promise((resolve, reject) => {
 			this._loadHYG()
 			    .then(db => {
-
+			    	this.loaded = true
 			        console.log(`Loaded ${db.length} stars`)
 			       	db.forEach(s => this.hyg.set(s.id, s))
 
 			        resolve()
+
+			        if (this.queuedWhileLoading.length > 0) {
+			        	this.queuedWhileLoading.forEach(fun => fun())
+			        	console.log('IF THIS DIDNT THROW AN ERROR PROBLEM SOLVED')
+			        }
+
 			        this._init(db)
 			        this._animate()
 
@@ -69,14 +78,20 @@ class Galaxy {
 
 	addSelf(starId) {
 	
-		let geometry = this._createGeometryFromStarId(starId)
-		let material = new THREE.PointsMaterial({
-			size: 1500,
-			color: 0xffffff
-		})
+		if (this.loaded) {
+			let geometry = this._createGeometryFromStarId(starId)
+			let material = new THREE.PointsMaterial({
+				size: 1500,
+				color: 0xffffff
+			})
 
-		let point = new THREE.Points(geometry, material)
-		this.scene.add(point)
+			let point = new THREE.Points(geometry, material)
+			this.scene.add(point)
+		} else {
+			this.queuedWhileLoading.push(function() {
+				addSelf(starId)
+			})
+		}
 	}
 
 	drawConnections(civLogConnections) {
