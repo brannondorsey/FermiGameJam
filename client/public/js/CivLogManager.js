@@ -145,10 +145,9 @@ class CivLogManager {
 
         // constructs a chronological list of chats between participants
         getChats (starNameA, starNameB) {
-            peerIdA = peerIdFromStarName(starNameA)
-            peerIdB = peerIdFromStarName(starNameB)
-
-            return clf(this.log).involving(peerIdA, peerIdB).chronological().log
+            let peerIdA = this.peerIdFromStarName(starNameA)
+            let peerIdB = this.peerIdFromStarName(starNameB)
+            return clf(this.log).type('chat').involving(peerIdA, peerIdB).chronological().log
         }
 
         // constructs a list of star ids that the input star / peer id have
