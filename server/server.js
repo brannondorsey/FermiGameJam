@@ -146,6 +146,9 @@ function radians (degrees) {
 // selects star closest to specified geolocation not in input `ids` object
 //  (values of `ids` must include `id` attribute)
 function assignStar (geo, ids) {
+    // try to assign stars in a spherical shell
+    let goal_distance = 100
+
     let assignedStars = Array.from(ids.values()).map(civ => civ.star)
 
     let lat = radians(geo.lat)
@@ -157,26 +160,22 @@ function assignStar (geo, ids) {
                 assignedStars.indexOf(star.id) === -1
         )
 
+    let calculate_metric = (star) => {
+        let central_angle = centralAngle(lat, lon, star.decrad, star.rarad)
+        let dist = Math.abs(star.dist - goal_distance)
+        let metric = dist * dist * central_angle
+        return metric
+    }
+
     sorted_star_list.sort(
         (star1, star2) =>
             {
-                let star1_ca = centralAngle(
-                    lat,
-                    lon,
-                    star1.decrad,
-                    star1.rarad
-                )
+                let star1_metric = calculate_metric(star1)
+                let star2_metric = calculate_metric(star2)
 
-                let star2_ca = centralAngle(
-                    lat,
-                    lon,
-                    star2.decrad,
-                    star2.rarad
-                )
-
-                return (star1_ca < star2_ca)?-1:1
+                return (star1_metric < star2_metric) ? -1 : 1
             }
     )
 
-    return sorted_star_list[sorted_star_list.length - 1].id
+    return sorted_star_list[0].id
 }
