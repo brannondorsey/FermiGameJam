@@ -45,7 +45,6 @@ class CivLogManager {
         // generates and assignes a new star name
         newStarName (starId) {
             let new_name = this.nameGenerator.name()
-            console.log(new_name)
             this.addStarName(starId, new_name)
             return new_name
         }

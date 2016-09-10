@@ -2,6 +2,7 @@ let socket = io(window.location.hostname + ':3000')
 socket.on('star_assignment', starId => {
 	console.log('[star_assignment]')
 	civLog.begin(starId)
+	UI.starNameAssigned(starId)
 })
 
 socket.on('star_introduction', ({peerId, starId}) => {
@@ -17,6 +18,7 @@ socket.on('star_introduction', ({peerId, starId}) => {
 })
 
 let civLog = null
+let state = new GameState()
 let p2p = new P2P()
 
 p2p.on('ice_connected', (id) => {
@@ -75,6 +77,7 @@ p2p.on('igm_sent', (id, igm) => {
 // SPECIFIC IGM RECEIVED EVENTS
 p2p.on('igm_chat', (id, igm) => {
 	console.log(`[igm_chat]:\n\t${igm}`)
+	UI.chatMessageReceived(igm)
 })
 
 p2p.on('igm_contact', (id, igm) => {
