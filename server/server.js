@@ -155,12 +155,12 @@ function assignStar (geo, ids) {
     let sorted_star_list = Array.from(hyg.values())
         .filter(
             star =>
-                (assignedStars.indexOf(star.id) === -1) && (star.dist < 100)
+                assignedStars.indexOf(star.id) === -1
         )
 
     let calculate_metric = (star) => {
         let central_angle = centralAngle(lat, lon, star.decrad, star.rarad)
-        return central_angle
+        return Math.sqrt(central_angle) * Math.pow(star.dist, 5)
     }
 
     sorted_star_list.sort(
