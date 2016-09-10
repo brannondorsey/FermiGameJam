@@ -36,7 +36,8 @@ class CivLogManager {
 
 		this.self = {
 			peerId,
-			starId: null
+			starId: null,
+			starName: null
 		}
 
 	}
@@ -83,7 +84,7 @@ class CivLogManager {
         // inserts yourself into the id maps
 	begin(starId) {
 		this.self.starId = starId
-                this.newStarName(starId)
+        this.self.starName = this.newStarName(starId)
 		this.peerId2StarId.set(this.self.peerId, this.self.starId)
 		this.starId2PeerId.set(this.self.starId, this.self.peerId)
 	}
@@ -144,10 +145,9 @@ class CivLogManager {
 
         // constructs a chronological list of chats between participants
         getChats (starNameA, starNameB) {
-            peerIdA = peerIdFromStarName(starNameA)
-            peerIdB = peerIdFromStarName(starNameB)
-
-            return clf(this.log).involving(peerIdA, peerIdB).chronological().log
+            let peerIdA = this.peerIdFromStarName(starNameA)
+            let peerIdB = this.peerIdFromStarName(starNameB)
+            return clf(this.log).type('chat').involving(peerIdA, peerIdB).chronological().log
         }
 
         // constructs a list of star ids that the input star / peer id have
