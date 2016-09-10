@@ -20,7 +20,7 @@ let star_list = Baby.parseFiles(
             console.log("parsed hygdata")
         }
     }
-)
+).data
 
 peerServer.on('connection', id => {
 
