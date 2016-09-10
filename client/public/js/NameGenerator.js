@@ -28,11 +28,11 @@ class NameGenerator {
                     "rho",
                     "sigma",
                     "tau",
-                    "upsilon"
+                    "upsilon",
                     "phi",
                     "chi",
                     "psi",
-                    "omega",
+                    "omega"
                 ]
 
                 let numerals = [
