@@ -46,6 +46,10 @@ class P2P extends EventEmitter {
 		})
 	}
 
+	isConnected(id) {
+		return this._conns.has(id) && this._conns.get(id).open
+	}
+
 	sendLog(id, log) {
 		let conn = this._conns.get(id)
 		conn.send(log)
