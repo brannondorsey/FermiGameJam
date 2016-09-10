@@ -25,6 +25,14 @@ class GameState {
 	isDeadAliveKnown(starName) {
 		return this._dead.has(starName)
 	}
+
+	getDead() {
+		return Array.from(this._dead.entries()).filter(pair => pair[1]).map(pair => pair[0])
+	}
+
+	getAlive() {
+		return Array.from(this._dead.entries()).filter(pair => !pair[1]).map(pair => pair[0])
+	}
 }
 
 

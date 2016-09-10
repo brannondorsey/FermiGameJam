@@ -130,8 +130,13 @@ function ping(starName) {
 
 function updateDeadAliveState(starName, alive) {
 	
-	// debugger;
-	alive ? state.markAlive(starName) : state.markDead(starName)
+	if (alive) {
+		state.markAlive(starName)
+		galaxy.markAlive(civLog.starName2StarId.get(starName))
+	} else {
+		state.markDead(starName)
+		galaxy.markDead(civLog.starName2StarId.get(starName))
+	}
 
 	// update galaxy data model
 	$('#explore tr span').each(function() {

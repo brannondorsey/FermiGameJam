@@ -17,9 +17,12 @@ class Galaxy {
 		this.renderer = null
 		this.raycaster = null
 		this.clock = null
-		this.scale = 100
-
 		this.graphMesh = null
+		this.markedStars = new Map() // starId => Three.Object
+
+		this.scale = 100
+		this.markedStarSize = 1000;
+
 	}
 
 	load() {
@@ -38,13 +41,51 @@ class Galaxy {
 		})
 	}
 
+	markDead(starId) {
+		this.mark(starId, 0xff0000)
+	}
+
+	markAlive(starId) {
+		this.mark(starId, 0x00ff00)
+	}
+
+	mark(starId, color) {
+		// if this hasn't yet been marked
+		if (!this.markedStars.has(starId)) {
+			let geo = this._createGeometryFromStarId(starId)
+			let mat = new THREE.PointsMaterial({
+				size: this.markedStarSize, color
+			})
+
+			let point = new THREE.Points(geo, mat)
+			this.markedStars.set(starId, point)
+			this.scene.add(point)
+		} else { // if we've already got this object in markedStars
+			let star = this.markedStars.get(starId)
+			star.material.color.setHex(color)
+			star.needsUpdate = true
+		}
+	}
+
+	addSelf(starId) {
+	
+		let geometry = this._createGeometryFromStarId(starId)
+		let material = new THREE.PointsMaterial({
+			size: 1500,
+			color: 0xffffff
+		})
+
+		let point = new THREE.Points(geometry, material)
+		this.scene.add(point)
+	}
+
 	drawConnections(civLogConnections) {
 
 		if (!(civLogConnections instanceof Array) || civLogConnections.length < 1)
 			return
 
 		let cons = civLogConnections
-		let opacity = 1.0
+		let opacity = 0.1
 		let decrement = opacity / civLogConnections.length
 		let numLines = cons.reduce((sum, con) => sum + con.length, 0)
 		let positions = new Float32Array(numLines * 3 * 2)
@@ -72,7 +113,7 @@ class Galaxy {
 
 		let colors = new Float32Array(numLines * 4 * 2)
 
-		let c = [[255, 0, 0],
+		let c = [[255, 255, 255],
 				 [255, 252, 25],
 				 [20, 133, 204]]
 
@@ -85,28 +126,28 @@ class Galaxy {
 
 				ic = ic % c.length
 
-				colors[counter]     = c[ic][0]
-				colors[counter + 1] = c[ic][1]
-				colors[counter + 2] = c[ic][2]
-				colors[counter + 3] = 1
-				colors[counter + 4] = c[ic][0]
-				colors[counter + 5] = c[ic][1]
-				colors[counter + 6] = c[ic][2]
-				colors[counter + 7] = 1
+				// colors[counter]     = c[ic][0]
+				// colors[counter + 1] = c[ic][1]
+				// colors[counter + 2] = c[ic][2]
+				// colors[counter + 3] = 1
+				// colors[counter + 4] = c[ic][0]
+				// colors[counter + 5] = c[ic][1]
+				// colors[counter + 6] = c[ic][2]
+				// colors[counter + 7] = 1
 
-				// colors[counter]     = 1
-				// colors[counter + 1] = 1
-				// colors[counter + 2] = 1
-				// colors[counter + 3] = opacity
-				// colors[counter + 4] = 1
-				// colors[counter + 5] = 1
-				// colors[counter + 6] = 1
-				// colors[counter + 7] = opacity
+				colors[counter]     = 1
+				colors[counter + 1] = 1
+				colors[counter + 2] = 1
+				colors[counter + 3] = opacity
+				colors[counter + 4] = 1
+				colors[counter + 5] = 1
+				colors[counter + 6] = 1
+				colors[counter + 7] = opacity
 
 				ic++
 				counter += 8
 			})
-			opacity -= decrement
+			// opacity -= decrement
 		})
 
 		let geometry = new THREE.BufferGeometry()
@@ -174,9 +215,10 @@ class Galaxy {
 	        positions[i + 1] = db[i / 3].y * this.scale;
 	        positions[i + 2] = db[i / 3].z * this.scale;
 
-	        colors[i]     = 255;
-	        colors[i + 1] = 255;
-	        colors[i + 2] = 255;
+	        colors[i]     = 0.2;
+	        colors[i + 1] = 0.2;
+	        colors[i + 2] = 0.2;
+
 	    }
 
 	    this.geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3))
@@ -259,6 +301,19 @@ class Galaxy {
 	            error: (err) => reject(err)
 	         })
     	})
+	}
+
+	_createGeometryFromStarId(starId) {
+
+		if (!this.hyg.has(starId))
+			throw Error(`${starId} not in hyg database`)
+		
+		let geometry = new THREE.Geometry()
+		let {x, y, z} = this.hyg.get(starId)
+		let p = new THREE.Vector3(x, y, z)
+		p.multiplyScalar(this.scale)
+		geometry.vertices.push(p)
+		return geometry
 	}
 }
 
