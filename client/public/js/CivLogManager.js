@@ -138,7 +138,7 @@ class CivLogManager {
         }
 
         peerIdFromStarName(starName) {
-            Creturn this.starId2PeerId.get(this.starName2StarId.get(starName))
+            return this.starId2PeerId.get(this.starName2StarId.get(starName))
         }
 
         // CIV LOG FILTER FUNCTIONS - FOR MESSAGE READTHROUGH, VISUALIZATION
