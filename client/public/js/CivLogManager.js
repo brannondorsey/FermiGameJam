@@ -173,7 +173,7 @@ class CivLogManager {
             let connection_counts = new Map()
 
             let cache_connection = (starId) => {
-                if (!connection_counts.includes(starId) {
+                if (!connection_counts.has(starId)) {
                     connection_counts.set(
                         starId,
                         this.firstDegreeConnections(starId)
@@ -207,18 +207,6 @@ class CivLogManager {
 
                 // short circuit
                 if (tuple_array.length < 1) return degree_array
-
-                tiple_array.sort(
-                    (left_tuple, right_tuple) => {
-                        let left_id = left_tuple[1]
-                        let right_id = right_tuple[1]
-
-                        let left_connections = connection_counts.get(left_id)
-                        let right_connections = connection_counts.get(right_id)
-
-                        return (left_connections < right_connections) ? -1 : 1
-                    }
-                )
 
                 degree_array.push(tuple_array)
             }
