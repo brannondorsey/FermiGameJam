@@ -11,16 +11,7 @@ let dead_ids = new Map
 let peerServer = PeerServer({port: 9000, path: '/fermi'})
 
 // reads star catalogue into object
-let star_list = Baby.parseFiles(
-    "data/hygdata_v3.csv",
-    {
-        header: true,
-        dynamicTyping: true,
-        complete: function(results) {
-            console.log("parsed hygdata")
-        }
-    }
-).data
+let hyg = _loadHYG()
 
 peerServer.on('connection', id => {
 
@@ -30,6 +21,26 @@ peerServer.on('connection', id => {
 
     console.log(`a peer client connected with id: ${id}`)
 });
+
+function _loadHYG () {
+    let star_list = Baby.parseFiles(
+        "data/hygdata_v3.csv",
+        {
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                console.log("parsed hygdata")
+            }
+        }
+    ).data
+    let hyg = new Map()
+
+    star_list.forEach(
+        (star) => hyg.set(star.id, star)
+    )
+
+    return hyg
+}
 
 io.on('connection', socket =>
     {
@@ -43,6 +54,7 @@ io.on('connection', socket =>
                 if (geolocation.geo) {
                     ids.set(id, assignStar(geolocation.geo, ids))
                 } else {
+                    // random location
                     ids.set(
                         id,
                         assignStar(
@@ -65,9 +77,31 @@ io.on('connection', socket =>
                         key => (key !== id) && !dead_ids.has(key)
                     )
                 if (potential_friends.length > 0) {
-                    let friend_peer_id = potential_friends[
-                        Math.floor(Math.random() * potential_friends.length)
-                    ]
+                    let square = (val) => Math.pow(val, 2)
+                    let distance = (a, b) => {
+                        let x1 = a.x
+                        let y1 = a.y
+                        let z1 = a.z
+                        let x2 = b.x
+                        let y2 = b.y
+                        let z2 = b.z
+                        return Math.sqrt(square(x2 - x1) + square(y2 - y1) + square(z2 - z1))
+                    }
+
+                    potential_friends.sort(
+                        (left_id, right_id) => {
+                            let left_friend = hyg.get(ids.get(left_id))
+                            let right_friend = hyg.get(ids.get(right_id))
+                            let player = hyg.get(ids.get(id))
+
+                            let left_dist = distance(player, left_friend)
+                            let right_dist = distance(player, right_friend)
+
+                            return (left_dist < right_dist) ? -1 : 1
+                        }
+                    )
+
+                    let friend_peer_id = potential_friends[potential_friends.length - 1]
                     let friend_star_id = ids.get(friend_peer_id)
                     socket.emit(
                         'star_introduction',
@@ -117,7 +151,7 @@ function assignStar (geo, ids) {
     let lat = radians(geo.lat)
     let lon = radians(geo.lon)
 
-    let sorted_star_list = star_list
+    let sorted_star_list = Array.from(hyg.values())
         .filter(
             star =>
                 assignedStars.indexOf(star.id) === -1
